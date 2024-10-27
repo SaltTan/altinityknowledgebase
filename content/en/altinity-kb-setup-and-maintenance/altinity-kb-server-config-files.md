@@ -2,22 +2,24 @@
 title: "Server config files"
 linkTitle: "Server config files"
 description: >
-    How to manage server config files in Clickhouse
+    How to manage server config files in ClickHouse®
 ---
 
 ## Сonfig management (recommended structure)
 
-Clickhouse server config consists of two parts server settings (config.xml) and users settings (users.xml).
+ClickHouse® server config consists of two parts server settings (config.xml) and users settings (users.xml).
 
 By default they are stored in the folder **/etc/clickhouse-server/** in two files config.xml & users.xml.
 
-We suggest never change vendor config files and place your changes into separate .xml files in sub-folders. This way is easier to maintain and ease Clickhouse upgrades.
+We suggest never change vendor config files and place your changes into separate .xml files in sub-folders. This way is easier to maintain and ease ClickHouse upgrades.
 
-**/etc/clickhouse-server/users.d** – sub-folder for user settings.
+**/etc/clickhouse-server/users.d** – sub-folder for user settings (derived from `users.xml` filename).
 
-**/etc/clickhouse-server/config.d** – sub-folder for server settings.
+**/etc/clickhouse-server/config.d** – sub-folder for server settings (derived from `config.xml` filename).
 
 **/etc/clickhouse-server/conf.d** – sub-folder for any (both) settings.
+
+If the root config (xml or yaml) has a different name, such as `keeper_config.xml` or `config_instance_66.xml`, then the `keeper_config.d` and `config_instance_66.d` folders will be used. But `conf.d` is always used and processed last.
 
 File names of your xml files can be arbitrary but they are applied in alphabetical order.
 
@@ -26,14 +28,14 @@ Examples:
 ```markup
 $ cat /etc/clickhouse-server/config.d/listen_host.xml
 <?xml version="1.0" ?>
-<yandex>
+<clickhouse>
   <listen_host>::</listen_host>
-</yandex>
+</clickhouse>
 
 
 $ cat /etc/clickhouse-server/config.d/macros.xml
 <?xml version="1.0" ?>
-<yandex>
+<clickhouse>
   <macros>
     <cluster>test</cluster>
     <replica>host22</replica>
@@ -41,11 +43,11 @@ $ cat /etc/clickhouse-server/config.d/macros.xml
     <server_id>41295</server_id>
     <server_name>host22.server.com</server_name>
   </macros>
-</yandex>
+</clickhouse>
 
 cat /etc/clickhouse-server/config.d/zoo.xml
 <?xml version="1.0" ?>
-<yandex>
+<clickhouse>
   <zookeeper>
     <node>
       <host>localhost</host>
@@ -55,28 +57,28 @@ cat /etc/clickhouse-server/config.d/zoo.xml
   <distributed_ddl>
     <path>/clickhouse/test/task_queue/ddl</path>
   </distributed_ddl>
-</yandex>
+</clickhouse>
 
 cat /etc/clickhouse-server/users.d/enable_access_management_for_user_default.xml
 <?xml version="1.0" ?>
-<yandex>
+<clickhouse>
   <users>
     <default>
       <access_management>1</access_management>
     </default>
   </users>
-</yandex>
+</clickhouse>
 
 cat /etc/clickhouse-server/users.d/memory_usage.xml
 <?xml version="1.0" ?>
-<yandex>
+<clickhouse>
     <profiles>
         <default>
             <max_bytes_before_external_group_by>25290221568</max_bytes_before_external_group_by>
             <max_memory_usage>50580443136</max_memory_usage>
         </default>
     </profiles>
-</yandex>
+</clickhouse>
 ```
 
 BTW, you can define any macro in your configuration and use them in Zookeeper paths
@@ -101,23 +103,23 @@ Example how to delete **tcp_port** & **http_port** defined on higher level in th
 ```markup
 cat /etc/clickhouse-server/config.d/disable_open_network.xml
 <?xml version="1.0"?>
-<yandex>
+<clickhouse>
   <http_port remove="1"/>
   <tcp_port remove="1"/>
-</yandex>
+</clickhouse>
 ```
 
 Example how to replace **remote_servers** section defined on higher level in the main config.xml (it allows to remove default test clusters.
 
 ```markup
 <?xml version="1.0" ?>
-<yandex>
+<clickhouse>
   <remote_servers replace="1">
     <mycluster>
       ....
     </mycluster>
   </remote_servers>
-</yandex>
+</clickhouse>
 ```
 
 ## Settings & restart
@@ -132,9 +134,9 @@ But there are **exceptions** from those rules (see below).
 
 * `<max_server_memory_usage>` 
 * `<max_server_memory_usage_to_ram_ratio>`
-* `<max_table_size_to_drop>`
-* `<max_partition_size_to_drop>` 
-* `<max_concurrent_queries>`
+* `<max_table_size_to_drop>` (since 19.12)
+* `<max_partition_size_to_drop>` (since 19.12)
+* `<max_concurrent_queries>` (since 21.11, also for versions older than v24 system tables are not updated with the new config values) 
 * `<macros>`
 * `<remote_servers>`
 * `<dictionaries_config>`
@@ -142,7 +144,7 @@ But there are **exceptions** from those rules (see below).
 * `<models_config>`
 * `<keeper_server>`
 * `<zookeeper>` (but reconnect don't happen automatically)
-* `<storage_configuration>`
+* `<storage_configuration>` -- only if you add a new entity (disk/volume/policy), to modify these enitities restart is mandatory.
 * `<user_directories>`
 * `<access_control_path>`
 * `<encryption_codecs>`
@@ -201,13 +203,13 @@ and add to the configuration
 ```markup
 $ cat /etc/clickhouse-server/config.d/dictionaries.xml
 <?xml version="1.0"?>
-<yandex>
+<clickhouse>
   <dictionaries_config>dict/*.xml</dictionaries_config>
   <dictionaries_lazy_load>true</dictionaries_lazy_load>
-</yandex>
+</clickhouse>
 ```
 
-**dict/\*.xml** – relative path, servers seeks files in the folder **/etc/clickhouse-server/dict**. More info in [Multiple Clickhouse instances](altinity-kb-server-config-files.md#Multiple-Clickhouse-instances).
+**dict/\*.xml** – relative path, servers seeks files in the folder **/etc/clickhouse-server/dict**. More info in [Multiple ClickHouse instances](#Multiple-ClickHouse-instances-at-one-host).
 
 ## incl attribute & metrica.xml
 
@@ -220,7 +222,7 @@ For example to avoid repetition of user/password for each dictionary you can cre
 ```markup
 $ cat /etc/clickhouse-server/dict_sources.xml
 <?xml version="1.0"?>
-<yandex>
+<clickhouse>
   <mysql_config>
       <port>3306</port>
       <user>user</user>
@@ -231,7 +233,7 @@ $ cat /etc/clickhouse-server/dict_sources.xml
       </replica>
       <db>my_database</db>
   </mysql_config>
-</yandex>
+</clickhouse>
 ```
 
 Include this file:
@@ -239,10 +241,10 @@ Include this file:
 ```markup
 $ cat /etc/clickhouse-server/config.d/dictionaries.xml
 <?xml version="1.0"?>
-<yandex>
+<clickhouse>
   ...
   <include_from>/etc/clickhouse-server/dict_sources.xml</include_from>
-</yandex>
+</clickhouse>
 ```
 
 And use in dictionary descriptions (**incl="mysql_config"**):
@@ -264,16 +266,16 @@ $ cat /etc/clickhouse-server/dict/country.xml
 </dictionaries>
 ```
 
-## Multiple Clickhouse instances at one host
+## Multiple ClickHouse instances at one host
 
-By default Clickhouse server configs are in **/etc/clickhouse-server/** because clickhouse-server runs with a parameter **--config-file /etc/clickhouse-server/config.xml**
+By default ClickHouse server configs are in **/etc/clickhouse-server/** because clickhouse-server runs with a parameter **--config-file /etc/clickhouse-server/config.xml**
 
 **config-file** is defined in startup scripts:
 
 * **/etc/init.d/clickhouse-server** – init-V
 * **/etc/systemd/system/clickhouse-server.service** – systemd
 
-Clickhouse uses the path from **config-file** parameter as base folder and seeks for other configs by relative path. All sub-folders **users.d / config.d** are relative.
+ClickHouse uses the path from **config-file** parameter as base folder and seeks for other configs by relative path. All sub-folders **users.d / config.d** are relative.
 
 You can start multiple **clickhouse-server** each with own **--config-file.**
 
@@ -318,10 +320,10 @@ By default ClickHouse uses **/var/lib/clickhouse/**. It can be overridden in pat
 
 ## preprocessed_configs
 
-Clickhouse server watches config files and folders. When you change, add or remove XML files Clickhouse immediately assembles XML files into a combined file. These combined files are stored in **/var/lib/clickhouse/preprocessed_configs/** folders.
+ClickHouse server watches config files and folders. When you change, add or remove XML files ClickHouse immediately assembles XML files into a combined file. These combined files are stored in **/var/lib/clickhouse/preprocessed_configs/** folders.
 
 You can verify that your changes are valid by checking **/var/lib/clickhouse/preprocessed_configs/config.xml**, **/var/lib/clickhouse/preprocessed_configs/users.xml**.
 
 If something wrong with with your settings e.g. unclosed XML element or typo you can see alerts about this mistakes in **/var/log/clickhouse-server/clickhouse-server.log**
 
-If you see your changes in **preprocessed_configs** it does not mean that changes are applied on running server, check [Settings & restart](altinity-kb-server-config-files.md#Settings-%26--restart)
+If you see your changes in **preprocessed_configs** it does not mean that changes are applied on running server, check Settings and restart.

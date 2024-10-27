@@ -1,14 +1,14 @@
 ---
-title: "Debug hunging thing"
-linkTitle: "Debug hunging thing"
+title: "Debug hanging thing"
+linkTitle: "Debug hanging thing"
 weight: 100
 description: >-
-     Debug hunging / freezing things
+     Debug hanging / freezing things
 ---
 
-## Debug hunging / freezing things 
+## Debug hanging / freezing things 
 
-If ClickHouse is busy with something and you don't know what's happeing, you can easily check the stacktraces of all the thread which are working
+If ClickHouse® is busy with something and you don't know what's happening, you can easily check the stacktraces of all the thread which are working
 
 ```sql
 SELECT
@@ -22,7 +22,7 @@ SETTINGS allow_introspection_functions=1
 FORMAT Vertical;
 ```
 
-If you can't start any queries, but you have access to the node, you can sent a singal
+If you can't start any queries, but you have access to the node, you can sent a signal
 
 ```
 # older versions

@@ -72,7 +72,7 @@ Pros and cons:
   * easy to extend, you can have very dynamic / huge number of metrics.
   * the only option to store hierarchical / complicated data structures, also with arrays etc. inside.
   * good for sparse recording (each time point can have only 1% of all the possible metrics)
-  * ClickHouse has efficient API to work with JSON
+  * ClickHouse® has efficient API to work with JSON
   * nice if your data originally came in JSON (don't need to reformat)
 * Cons
   * uses storage non efficiently
@@ -88,14 +88,14 @@ Same pros/cons as raw JSON, but usually bit more compact than JSON
 Pros and cons:
 
 * Pros
-  * clickhouse has efficient API to work with URLs (extractURLParameter etc)
+  * ClickHouse has efficient API to work with URLs (extractURLParameter etc)
   * can have sense if you data came in such format (i.e. you can store GET / POST request data directly w/o reprocessing)
 * Cons
   * slower than arrays
 
 ### 2e Several 'baskets' of arrays
 
-i.e.: timestamp, sourceid, metric_names_basket1, metric_values_basker1, ..., metric_names_basketN, metric_values_basketN
+i.e.: timestamp, sourceid, metric_names_basket1, metric_values_basket1, ..., metric_names_basketN, metric_values_basketN
 The same as 2b, but there are several key-value arrays ('basket'), and metric go to one particular basket depending on metric name (and optionally by metric type)
 
 Pros and cons:
@@ -123,10 +123,7 @@ WIP currently, ETA of first beta = autumn 2021
 
 Related links:
 
-[There is one article on our blog on this subject with some benchmarks.](https://www.altinity.com/blog/2019/5/23/handling-variable-time-series-efficiently-in-clickhouse")
+[There is one article on our blog on this subject with some benchmarks.](https://www.altinity.com/blog/2019/5/23/handling-variable-time-series-efficiently-in-clickhouse)
 
 [Slides from Percona Live](https://www.percona.com/sites/default/files/ple19-slides/day1-pm/clickhouse-for-timeseries.pdf")
 
-[Uber article about how they adapted combined approach](https://eng.uber.com/logging/")
-
-[Slides for Uber log storage approach](https://github.com/ClickHouse/clickhouse-presentations/blob/master/meetup40/uber.pdf")

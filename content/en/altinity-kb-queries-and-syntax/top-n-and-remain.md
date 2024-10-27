@@ -98,7 +98,7 @@ ORDER BY res ASC
 └──────┴──────────┘
 ```
 
-## Using window functions (starting from 21.1)
+## Using window functions (starting from ClickHouse® 21.1)
 
 ```sql
 SET allow_experimental_window_functions = 1;
@@ -182,4 +182,37 @@ ORDER BY res
 │ 999  │    99945 │
 │ null │ 49000050 │
 └──────┴──────────┘
+```
+
+## Using WITH TOTALS
+
+The total number will include the top rows as well so the remainder must be calculated by the application
+
+```
+SELECT
+    k,
+    sum(number) AS res
+FROM top_with_rest
+GROUP BY k
+    WITH TOTALS
+ORDER BY res DESC
+LIMIT 10
+
+┌─k───┬───res─┐
+│ 999 │ 99945 │
+│ 998 │ 99845 │
+│ 997 │ 99745 │
+│ 996 │ 99645 │
+│ 995 │ 99545 │
+│ 994 │ 99445 │
+│ 993 │ 99345 │
+│ 992 │ 99245 │
+│ 991 │ 99145 │
+│ 990 │ 99045 │
+└─────┴───────┘
+
+Totals:
+┌─k─┬──────res─┐
+│   │ 49995000 │
+└───┴──────────┘
 ```

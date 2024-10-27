@@ -1,6 +1,6 @@
 baseURL = "http://kb.altinity.com/"
 languageCode = "en-us"
-title = "Altinity Knowledge Base"
+title = "Altinity® Knowledge Base for ClickHouse®"
 # theme = ["docsy"]
 publishDir = "docs"
 enableRobotsTXT = true
@@ -54,8 +54,8 @@ anchor = "smart"
 
 [languages]
 [languages.en]
-title = "Altinity Knowledge Base"
-description = "Altinity Knowledge Base"
+title = "Altinity® Knowledge Base for ClickHouse®"
+description = "Altinity® Knowledge Base for ClickHouse®"
 languageName = "English"
 # Weight used for sorting.
 weight = 1
@@ -76,7 +76,7 @@ time_format_blog = "2006.01.02"
 
 [params]
 # copyright = " Altinity Inc."
-copyright = " Altinity Inc. Altinity® and Altinity.Cloud® are registered trademarks of Altinity, Inc. ClickHouse® is a registered trademark of ClickHouse, Inc."
+copyright = " Altinity Inc. Altinity®, Altinity.Cloud®, and Altinity Stable® are registered trademarks of Altinity, Inc. ClickHouse® is a registered trademark of ClickHouse, Inc.; Altinity is not affiliated with or associated with ClickHouse, Inc. Kafka, Kubernetes, MySQL, and PostgreSQL are trademarks and property of their respective owners."
 privacy_policy = "https://altinity.com/privacy-policy/"
 favicon = "/favicon.ico"
 
@@ -158,28 +158,37 @@ enable = false
 
 [params.links]
 # End user relevant links. These will show up on left side of footer and in the community page if you have one.
-[[params.links.user]]
-	name ="Twitter"
+[[params.links.developer]]
+  name ="Slack"
+  url = "https://altinity.com/slack"
+  icon = "fab fa-slack"
+  desc = "Join our Slack Community"
+[[params.links.developer]]
+	name ="X"
 	url = "https://twitter.com/AltinityDB"
 	icon = "fab fa-twitter"
-        desc = "Follow us on Twitter to get the latest news!"
-[[params.links.user]]
+  desc = "Follow us on X to get the latest news!"
+[[params.links.developer]]
+  name = "LinkedIn"
+  url = "https://www.linkedin.com/company/altinity/"
+  icon = "fab fa-linkedin"
+        desc = "Partner with us on LinkedIn."
+[[params.links.developer]]
 	name = "Youtube"
 	url = "https://www.youtube.com/channel/UCE3Y2lDKl_ZfjaCrh62onYA"
 	icon = "fab fa-youtube"
         desc = "Watch our videos."
-[[params.links.user]]
-	name = "LinkedIn"
-	url = "https://www.linkedin.com/company/altinity/"
-	icon = "fab fa-linkedin"
-        desc = "Partner with us on LinkedIn."
 # Developer relevant links. These will show up on right side of footer and in the community page if you have one.
 [[params.links.developer]]
 	name = "GitHub"
 	url = "https://github.com/orgs/Altinity/"
 	icon = "fab fa-github"
-        desc = "Development takes place here!"
-
+  desc = "Development takes place here!"
+[[params.links.developer]]
+  name = "Reddit"
+  url = "https://www.reddit.com/r/Clickhouse/"
+  icon = "fab fa-reddit"
+  desc = "Altinity on Reddit"
 [outputFormats]
 [outputFormats.PRINT]
 baseName = "index"

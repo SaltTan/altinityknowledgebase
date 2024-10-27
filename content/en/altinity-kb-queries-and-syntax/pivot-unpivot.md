@@ -12,7 +12,7 @@ CREATE TABLE sales(suppkey UInt8, category String, quantity UInt32) ENGINE=Memor
 INSERT INTO sales VALUES (2, 'AA' ,7500),(1, 'AB' , 4000),(1, 'AA' , 6900),(1, 'AB', 8900), (1, 'AC', 8300), (1, 'AA', 7000), (1, 'AC', 9000), (2,'AA', 9800), (2,'AB', 9600), (1,'AC', 8900),(1, 'AD', 400), (2,'AD', 900), (2,'AD', 1200), (1,'AD', 2600), (2, 'AC', 9600),(1, 'AC', 6200);
 ```
 
-### Using Map data type (starting from Clickhouse 21.1)
+### Using Map data type (starting from ClickHouse® 21.1)
 
 ```sql
 WITH CAST(sumMap([category], [quantity]), 'Map(String, UInt32)') AS map
@@ -122,18 +122,14 @@ ORDER BY suppkey ASC
 │       3 │ BRAND_C │ AC       │     6900 │
 │       3 │ BRAND_C │ AD       │     3400 │
 └─────────┴─────────┴──────────┴──────────┘
-```
 
-### Using tupleToNameValuePairs (starting from ClickHouse 21.9)
-
-```sql
 SELECT
     suppkey,
     brand,
     tpl.1 AS category,
     tpl.2 AS quantity
 FROM sales_w
-ARRAY JOIN tupleToNameValuePairs((AA, AB, AC, AD)) AS tpl
+ARRAY JOIN tupleToNameValuePairs(CAST((AA, AB, AC, AD), 'Tuple(AA UInt32, AB UInt32, AC UInt32, AD UInt32)')) AS tpl
 ORDER BY suppkey ASC
 
 ┌─suppkey─┬─brand───┬─category─┬─quantity─┐
@@ -151,3 +147,4 @@ ORDER BY suppkey ASC
 │       3 │ BRAND_C │ AD       │     3400 │
 └─────────┴─────────┴──────────┴──────────┘
 ```
+

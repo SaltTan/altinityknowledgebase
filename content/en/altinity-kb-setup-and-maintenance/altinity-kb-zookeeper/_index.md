@@ -17,7 +17,7 @@ TLDR version:
 6) [monitor zookeeper](https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-zookeeper/zookeeper-monitoring/).
 
 Side note:
-in many cases, the slowness of the zookeeper is actually a symptom of some issue with clickhouse schema/usage pattern (the most typical issues: an enormous number of partitions/tables/databases with real-time inserts, tiny & frequent inserts).
+in many cases, the slowness of the zookeeper is actually a symptom of some issue with ClickHouse® schema/usage pattern (the most typical issues: an enormous number of partitions/tables/databases with real-time inserts, tiny & frequent inserts).
 
 ### How to install
 
@@ -61,11 +61,9 @@ zk_sum_follower_sync_time    0
 
 [https://github.com/apache/zookeeper/blob/master/zookeeper-docs/src/main/resources/markdown/zookeeperTools.md](https://github.com/apache/zookeeper/blob/master/zookeeper-docs/src/main/resources/markdown/zookeeperTools.md)
 
-## Alternatives for zkCli
+## Alternative for zkCli
 
 * [https://github.com/go-zkcli/zkcli](https://github.com/go-zkcli/zkcli)
-* [https://github.com/outbrain/zookeepercli](https://github.com/outbrain/zookeepercli)
-* [https://idata.co.il/2018/07/a-day-at-the-zoo-graphic-uis-for-apache-zookeeper/](https://idata.co.il/2018/07/a-day-at-the-zoo-graphic-uis-for-apache-zookeeper/)
 
 ## Web UI
 

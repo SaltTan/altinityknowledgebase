@@ -14,7 +14,7 @@ Some setting that are not enabled by default.
 
 Enables or disables complete dropping of data parts where all rows are expired in MergeTree tables.
 
-When ttl_only_drop_parts is disabled (by default), the ClickHouse server only deletes expired rows according to their TTL.
+When ttl_only_drop_parts is disabled (by default), the ClickHouse® server only deletes expired rows according to their TTL.
 
 When ttl_only_drop_parts is enabled, the ClickHouse server drops a whole part when all rows in it are expired.
 
@@ -33,7 +33,7 @@ Possible values:
 
 * [aggregate_functions_null_for_empty](https://clickhouse.com/docs/en/operations/settings/settings/#aggregate_functions_null_for_empty)
 
-Default behaviour is not compatible with ANSI SQL (ClickHouse avoids Nullable types by perfomance reasons)
+Default behaviour is not compatible with ANSI SQL (ClickHouse avoids Nullable types by performance reasons)
 
 ```sql
 select sum(x), avg(x) from (select 1 x where 0);

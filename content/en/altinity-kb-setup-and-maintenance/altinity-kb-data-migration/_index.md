@@ -11,7 +11,7 @@ Pros:
 
 Cons:
 * Decoding & encoding of common data formats may be slower / require more CPU
-* The data size is usually bigger than ClickHouse formats.
+* The data size is usually bigger than ClickHouse® formats.
 * Some of the common data formats have limitations.
 
 {{% alert title="Info" color="info" %}}
@@ -31,9 +31,11 @@ Pros:
 Cons:
 * Uses CPU / RAM (mostly on the receiver side)
 
-See details in:
+See details of both approaches in:
 
 [remote-table-function.md]({{<ref "remote-table-function.md" >}})
+
+[distributed-table-cluster.md]({{<ref "distributed-table-cluster.md" >}})
 
 ## clickhouse-copier
 
@@ -54,7 +56,7 @@ Internally it works like smart `INSERT INTO cluster(…) SELECT * FROM ...` with
 {{% /alert %}}
 
 {{% alert title="Info" color="info" %}}
-Run clickhouse copier on the same nodes as receiver clickhouse, to avoid doubling the network load.
+Run `clickhouse-copier` on the same nodes as receiver ClickHouse, to avoid doubling the network load.
 {{% /alert %}}
 
 See details in:
@@ -89,9 +91,9 @@ Cons:
 
 Just create the backup on server 1, upload it to server 2, and restore the backup.
 
-See [https://github.com/AlexAkulov/clickhouse-backup](https://github.com/AlexAkulov/clickhouse-backup)
+See [https://github.com/Altinity/clickhouse-backup](https://github.com/Altinity/clickhouse-backup)
 
-[https://altinity.com/blog/introduction-to-clickhouse-backups-and-clickhouse-backup]("https://altinity.com/blog/introduction-to-clickhouse-backups-and-clickhouse-backup")
+[https://altinity.com/blog/introduction-to-clickhouse-backups-and-clickhouse-backup](https://altinity.com/blog/introduction-to-clickhouse-backups-and-clickhouse-backup)
 
 ## Fetch from zookeeper path
 
@@ -100,7 +102,7 @@ Pros:
 
 Cons:
 * Table schema should be the same.
-* Works only when the source and the destination clickhouse servers share the same zookeeper (without chroot)
+* Works only when the source and the destination ClickHouse servers share the same zookeeper (without chroot)
 * Needs to access zookeeper and ClickHouse replication ports: (`interserver_http_port` or `interserver_https_port`)
 
 ```sql
@@ -108,21 +110,23 @@ ALTER TABLE table_name FETCH PARTITION partition_expr FROM 'path-in-zookeeper'
 ```
 [alter table fetch detail]({{<ref "fetch_alter_table" >}})
 
-## Replication protocol
+## Using the replication protocol by adding a new replica
 
 Just make one more replica in another place.
 
 Pros:
 * Simple to setup
 * Data is consistent all the time automatically.
-* Low CPU and network usage.
+* Low CPU and network usage should be tuned.
 
 Cons:
 * Needs to reach both zookeeper client (2181) and ClickHouse replication ports: (`interserver_http_port` or `interserver_https_port`)
 * In case of cluster migration, zookeeper need’s to be migrated too.
-* Replication works both ways.
+* Replication works both ways so new replica should be outside the main cluster.
 
-[../altinity-kb-zookeeper/altinity-kb-zookeeper-cluster-migration.md](../altinity-kb-zookeeper/altinity-kb-zookeeper-cluster-migration.md)
+Check the details in:
+
+[Add a replica to a Cluster]({{<ref "add_remove_replica.md" >}})
 
 ## See also
 

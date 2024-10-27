@@ -10,45 +10,38 @@ description: >
 Some random example:
 
 ```xml
-<kafka>
-    <max_poll_interval_ms>60000</max_poll_interval_ms>
-    <session_timeout_ms>60000</session_timeout_ms>
-    <heartbeat_interval_ms>10000</heartbeat_interval_ms>
-    <reconnect_backoff_ms>5000</reconnect_backoff_ms>
-    <reconnect_backoff_max_ms>60000</reconnect_backoff_max_ms>
-    <request_timeout_ms>20000</request_timeout_ms>
-    <retry_backoff_ms>500</retry_backoff_ms>
-    <message_max_bytes>20971520</message_max_bytes>
-    <debug>all</debug><!-- only to get the errors -->
-    <security_protocol>SSL</security_protocol>
-    <ssl_ca_location>/etc/clickhouse-server/ssl/kafka-ca-qa.crt</ssl_ca_location>
-    <ssl_certificate_location>/etc/clickhouse-server/ssl/client_clickhouse_client.pem</ssl_certificate_location>
-    <ssl_key_location>/etc/clickhouse-server/ssl/client_clickhouse_client.key</ssl_key_location>
-    <ssl_key_password>pass</ssl_key_password>
-</kafka>
+<yandex>
+    <kafka>
+        <max_poll_interval_ms>60000</max_poll_interval_ms>
+        <session_timeout_ms>60000</session_timeout_ms>
+        <heartbeat_interval_ms>10000</heartbeat_interval_ms>
+        <reconnect_backoff_ms>5000</reconnect_backoff_ms>
+        <reconnect_backoff_max_ms>60000</reconnect_backoff_max_ms>
+        <request_timeout_ms>20000</request_timeout_ms>
+        <retry_backoff_ms>500</retry_backoff_ms>
+        <message_max_bytes>20971520</message_max_bytes>
+        <debug>all</debug><!-- only to get the errors -->
+        <security_protocol>SSL</security_protocol>
+        <ssl_ca_location>/etc/clickhouse-server/ssl/kafka-ca-qa.crt</ssl_ca_location>
+        <ssl_certificate_location>/etc/clickhouse-server/ssl/client_clickhouse_client.pem</ssl_certificate_location>
+        <ssl_key_location>/etc/clickhouse-server/ssl/client_clickhouse_client.key</ssl_key_location>
+        <ssl_key_password>pass</ssl_key_password>
+    </kafka>
+</yandex>
 ```
 
 ## Authentication / connectivity
 
-### Amazon MSK
+Sometimes the consumer group needs to be explicitly allowed in the broker UI config.
+
+### Amazon MSK | SASL/SCRAM
 
 ```xml
 <yandex>
   <kafka>
     <security_protocol>sasl_ssl</security_protocol>
-    <sasl_username>root</sasl_username>
-    <sasl_password>toor</sasl_password>
-  </kafka>
-</yandex>
-```
-
-### SASL/SCRAM
-
-```xml
-<yandex>
-  <kafka>
-    <security_protocol>sasl_ssl</security_protocol>
-    <sasl_mechanism>SCRAM-SHA-512</sasl_mechanism>
+    <!-- Depending on your broker config you may need to uncomment below sasl_mechanism -->
+    <!-- <sasl_mechanism>SCRAM-SHA-512</sasl_mechanism> -->
     <sasl_username>root</sasl_username>
     <sasl_password>toor</sasl_password>
   </kafka>
@@ -57,11 +50,28 @@ Some random example:
 
 [https://leftjoin.ru/all/clickhouse-as-a-consumer-to-amazon-msk/](https://leftjoin.ru/all/clickhouse-as-a-consumer-to-amazon-msk/)
 
+
+### on-prem / self-hosted Kafka broker
+
+```xml
+<yandex>
+  <kafka>
+    <security_protocol>sasl_ssl</security_protocol>
+    <sasl_mechanism>SCRAM-SHA-512</sasl_mechanism>
+    <sasl_username>root</sasl_username>
+    <sasl_password>toor</sasl_password>
+    <!-- fullchain cert here -->
+    <ssl_ca_location>/path/to/cert/fullchain.pem</ssl_ca_location>   
+  </kafka>
+</yandex>
+```
+
+
 ### Inline Kafka certs
 
 To connect to some Kafka cloud services you may need to use certificates.
 
-If needed they can be converted to pem format and inlined into ClickHouse config.xml
+If needed they can be converted to pem format and inlined into ClickHouse® config.xml
 Example:
 
 ```xml
@@ -105,30 +115,29 @@ See [https://github.com/ClickHouse/ClickHouse/issues/12609](https://github.com/C
   </kafka>
 ```
 
-### confluent cloud
+### Confluent Cloud
 
 ```xml
-    <yandex>
-        <kafka>
-        <auto_offset_reset>smallest</auto_offset_reset>
-        <security_protocol>SASL_SSL</security_protocol>
-        <ssl_endpoint_identification_algorithm>https</ssl_endpoint_identification_algorithm>
-        <sasl_mechanism>PLAIN</sasl_mechanism>
-xml<sasl_username>username</sasl_username>
-        <sasl_password>password</sasl_password>
-        <ssl_ca_location>probe</ssl_ca_location>
-        <!--
-          <ssl_ca_location>/path/to/cert.pem</ssl_ca_location>      
-        -->
-        </kafka>
-    </yandex>
+<yandex>
+  <kafka>
+    <auto_offset_reset>smallest</auto_offset_reset>
+    <security_protocol>SASL_SSL</security_protocol>
+    <!-- older broker versions may need this below, for newer versions ignore -->
+    <!-- <ssl_endpoint_identification_algorithm>https</ssl_endpoint_identification_algorithm> -->
+    <sasl_mechanism>PLAIN</sasl_mechanism>
+    <sasl_username>username</sasl_username>
+    <sasl_password>password</sasl_password>
+    <!-- Same as above here ignore if newer broker version -->
+    <!-- <ssl_ca_location>probe</ssl_ca_location> -->
+  </kafka>
+</yandex>
 ```
 
 [https://docs.confluent.io/cloud/current/client-apps/config-client.html](https://docs.confluent.io/cloud/current/client-apps/config-client.html)
 
 ## How to test connection settings
 
-Use kafkacat utility - it internally uses same library to access Kafla as clickhouse itself and allows easily to test different settings.
+Use kafkacat utility - it internally uses same library to access Kafla as ClickHouse itself and allows easily to test different settings.
 
 ```bash
 kafkacat -b my_broker:9092 -C -o -10 -t my_topic \
@@ -148,7 +157,7 @@ https://github.com/ClickHouse/ClickHouse/blob/da4856a2be035260708fe2ba3ffb9e437d
  
 So it load the main config first, after that it load (with overwrites) the configs for all topics,  **listed in `kafka_topic_list` of the table**.  
  
-Also since v21.12 it's possible to use more straght-forward way using named_collections:
+Also since v21.12 it's possible to use more straightforward way using named_collections:
 https://github.com/ClickHouse/ClickHouse/pull/31691
  
 So you can say something like
@@ -169,6 +178,27 @@ And after that in configuration:
   </kafka1>
  </named_collections>
 </clickhouse>
+
+
+<yandex>
+    <named_collections>
+        <kafka_preset1>
+            <kafka_broker_list>...</kafka_broker_list>
+            <kafka_topic_list>foo.bar</kafka_topic_list>
+            <kafka_group_name>foo.bar.group</kafka_group_name>
+            <kafka>
+                <security_protocol>...</security_protocol>
+                <sasl_mechanism>...</sasl_mechanism>
+                <sasl_username>...</sasl_username>
+                <sasl_password>...</sasl_password>
+                <auto_offset_reset>smallest</auto_offset_reset>
+                <ssl_endpoint_identification_algorithm>https</ssl_endpoint_identification_algorithm>
+                <ssl_ca_location>probe</ssl_ca_location>
+            </kafka>
+        </kafka_preset1>
+    </named_collections>
+</yandex>
+
 ```
  
 The same fragment of code in newer versions:

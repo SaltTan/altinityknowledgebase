@@ -2,13 +2,13 @@
 title: "There are N unfinished hosts (0 of them are currently active)."
 linkTitle: "There are N unfinished hosts (0 of them are currently active)."
 description: >
-    "There are N unfinished hosts (0 of them are currently active)."
+    There are N unfinished hosts (0 of them are currently active).
 ---
 Sometimes your Distributed DDL queries are being stuck, and not executing on all or subset of nodes, there are a lot of possible reasons for that kind of behavior, so it would take some time and effort to investigate.
 
 ## Possible reasons
 
-### Clickhouse node can't recognize itself
+### ClickHouse® node can't recognize itself
 
 ```sql
 SELECT * FROM system.clusters; -- check is_local column, it should have 1 for itself
@@ -24,7 +24,7 @@ cat /etc/hostname
 
 ### Debian / Ubuntu
 
-There is an issue in Debian based images, when hostname being mapped to 127.0.1.1 address which doesn't literally match network interface and clickhouse fails to detect this address as local.
+There is an issue in Debian based images, when hostname being mapped to 127.0.1.1 address which doesn't literally match network interface and ClickHouse fails to detect this address as local.
 
 [https://github.com/ClickHouse/ClickHouse/issues/23504](https://github.com/ClickHouse/ClickHouse/issues/23504)
 
@@ -99,7 +99,10 @@ WHERE metric LIKE '%MaxDDLEntryID%'
 grep -C 40 "ddl_entry" /var/log/clickhouse-server/clickhouse-server*.log
 ```
 
-#### Issues that can prevent the task execution
+
+### Issues that can prevent task execution
+
+#### Obsolete Replicas 
 
 Obsolete replicas left in zookeeper.
 
@@ -115,6 +118,8 @@ SYSTEM START REPLICATION QUEUES;
 ```
 
 [https://clickhouse.tech/docs/en/sql-reference/statements/system/\#query_language-system-drop-replica](https://clickhouse.tech/docs/en/sql-reference/statements/system/\#query_language-system-drop-replica)
+
+#### Tasks manually removed from DDL queue 
 
 Task were removed from DDL queue, but left in Replicated\*MergeTree table queue.
 
@@ -148,3 +153,29 @@ Context of this problem is:
 
 Solution:
 * Reload/Restore this replica from scratch.
+
+#### DDL path was changed in Zookeeper without restarting ClickHouse
+
+Changing the DDL queue path in Zookeeper without restarting ClickHouse will make ClickHouse confused. If you need to do this ensure that you restart ClickHouse before submitting additional distributed DDL commands. Here's an example. 
+
+```sql
+-- Path before change:
+SELECT *
+FROM system.zookeeper
+WHERE path = '/clickhouse/clickhouse101/task_queue'
+
+┌─name─┬─value─┬─path─────────────────────────────────┐
+│ ddl  │       │ /clickhouse/clickhouse101/task_queue │
+└──────┴───────┴──────────────────────────────────────┘
+
+-- Path after change
+SELECT *
+FROM system.zookeeper
+WHERE path = '/clickhouse/clickhouse101/task_queue'
+
+┌─name─┬─value─┬─path─────────────────────────────────┐
+│ ddl2 │       │ /clickhouse/clickhouse101/task_queue │
+└──────┴───────┴──────────────────────────────────────┘
+```
+
+The reason is that ClickHouse will not "see" this change and will continue to look for tasks in the old path. Altering paths in Zookeeper should be avoided if at all possible. If necessary it must be done *very carefully*. 

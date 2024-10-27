@@ -1,21 +1,21 @@
 ---
-title: "Successful ClickHouse deployment plan"
-linkTitle: "Successful ClickHouse deployment plan"
+title: "Successful ClickHouse® deployment plan"
+linkTitle: "Successful ClickHouse® deployment plan"
 weight: 100
 description: >-
-     Successful ClickHouse deployment plan.
+     Successful ClickHouse® deployment plan
 ---
 
-## Successful ClickHouse deployment plan
+## Successful ClickHouse® deployment plan
 
 ### Stage 0. Build POC
 
-1.  Install single node clickhouse
+1.  Install single node ClickHouse
     - https://clickhouse.com/docs/en/getting-started/tutorial/
     - https://clickhouse.com/docs/en/getting-started/install/
     - https://docs.altinity.com/altinitystablebuilds/stablequickstartguide/
 2.  Start with creating a single table (the biggest one), use MergeTree engine. Create 'some' schema (most probably it will be far from optimal). Prefer denormalized approach for all immutable dimensions, for mutable dimensions - consider dictionaries.
-3.  Load some amount of data (at least 5 Gb, and 10 mln rows) - preferable the real one, or as close to real as possible. Usully the simplest options are either through CSV / TSV files (or `insert into clickhouse_table select * FROM mysql(...) where ...`)
+3.  Load some amount of data (at least 5 Gb, and 10 mln rows) - preferable the real one, or as close to real as possible. Usually the simplest options are either through CSV / TSV files (or `insert into clickhouse_table select * FROM mysql(...) where ...`)
 4.  Create several representative queries.
 5.  Check the columns cardinality, and appropriate types, use minimal needed type
 6.  Review the partition by and order by. https://kb.altinity.com/engines/mergetree-table-engine-family/pick-keys/
@@ -38,16 +38,16 @@ description: >-
      - https://kb.altinity.com/altinity-kb-setup-and-maintenance/cluster-production-configuration-guide/network-configuration/
 9.  If you need sharding - consider different sharding approaches.
 
-### Stage 2. Preprod setup & developement
+### Stage 2. Preprod setup & development
 
-1.  Install clickhouse in cluster - several nodes / VMs + zookeeper
+1.  Install ClickHouse in cluster - several nodes / VMs + zookeeper
     - https://kb.altinity.com/altinity-kb-setup-and-maintenance/cluster-production-configuration-guide/cluster-configuration-process/
 	- https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-zookeeper/altinity-kb-proper-setup/
 	- https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-zookeeper/install_ubuntu/
 2.  Create good config & automate config / os / restarts (ansible / puppet etc)
 	- https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-settings-to-adjust/
 	- for docker: https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-clickhouse-in-docker/
-	- for k8, use clickhouse-operator OR https://kb.altinity.com/altinity-kb-kubernetes/altinity-kb-possible-issues-with-running-clickhouse-in-k8s/
+	- for k8s, use the Altinity Kubernetes Operator for ClickHouse OR https://kb.altinity.com/altinity-kb-kubernetes/altinity-kb-possible-issues-with-running-clickhouse-in-k8s/
 3.  Set up monitoring / log processing / alerts etc.
     - https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-monitoring/#build-your-own-monitoring
 4.  Set up users.
@@ -56,7 +56,7 @@ description: >-
      - https://kb.altinity.com/altinity-kb-setup-and-maintenance/schema-migration-tools/
 6.  Design backup / failover strategies:
 	- https://clickhouse.com/docs/en/operations/backup/
-	- https://github.com/AlexAkulov/clickhouse-backup
+	- https://github.com/Altinity/clickhouse-backup
 7.  Develop pipelines / queries, create test suite, CI/CD
 8.  Do benchmark / stress tests 
 9.  Test configuration changes / server restarts / failovers / version upgrades

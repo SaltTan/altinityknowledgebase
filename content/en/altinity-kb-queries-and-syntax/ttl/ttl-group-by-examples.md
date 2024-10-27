@@ -3,6 +3,8 @@ title: "TTL GROUP BY Examples"
 linkTitle: "TTL GROUP BY Examples"
 description: >
     TTL GROUP BY Examples
+aliases:
+  /altinity-kb-queries-and-syntax/ttl-group-by-examples
 ---
 ### Example with MergeTree table
 
@@ -26,9 +28,9 @@ TTL ts + interval 30 day
     ts = min(toStartOfDay(ts));
 ```
 
-During TTL merges Clickhouse re-calculates values of columns in the SET section.
+During TTL merges ClickHouse® re-calculates values of columns in the SET section.
 
-GROUP BY section should be a prefix of a table's ORDER BY.
+GROUP BY section should be a prefix of a table's PRIMARY KEY (the same as ORDER BY, if no separate PRIMARY KEY defined).
 
 ```sql
 -- stop merges to demonstrate data before / after 
@@ -178,7 +180,106 @@ GROUP BY m;
 └────────┴─────────┴────────────┴────────────────┴────────────────┘
 ```
 
-During merges Clickhouse re-calculates **ts** columns as **min(toStartOfDay(ts))**. It's possible **only for the last column** of `SummingMergeTree` `ORDER BY` section `ORDER BY (key1, key2, toStartOfDay(ts), ts)` otherwise it will **break** the order of rows in the table.
+During merges ClickHouse re-calculates **ts** columns as **min(toStartOfDay(ts))**. It's possible **only for the last column** of `SummingMergeTree` `ORDER BY` section `ORDER BY (key1, key2, toStartOfDay(ts), ts)` otherwise it will **break** the order of rows in the table.
+
+### Example with AggregatingMergeTree table
+
+```sql
+CREATE TABLE test_ttl_group_by_agg
+(
+    `key1` UInt32,
+    `key2` UInt32,
+    `ts` DateTime,
+    `counter` AggregateFunction(count, UInt32)
+)
+ENGINE = AggregatingMergeTree
+PARTITION BY toYYYYMM(ts)
+PRIMARY KEY (key1, key2, toStartOfDay(ts))
+ORDER BY (key1, key2, toStartOfDay(ts), ts)
+TTL ts + interval 30 day 
+    GROUP BY key1, key2, toStartOfDay(ts) 
+    SET counter = countMergeState(counter),
+    ts = min(toStartOfDay(ts));
+
+CREATE TABLE test_ttl_group_by_raw
+(
+    `key1` UInt32,
+    `key2` UInt32,
+    `ts` DateTime
+) ENGINE = Null;
+
+CREATE MATERIALIZED VIEW test_ttl_group_by_mv
+    TO test_ttl_group_by_agg
+AS
+SELECT
+    `key1`,
+    `key2`,
+    `ts`,
+    countState() as counter
+FROM test_ttl_group_by_raw
+GROUP BY key1, key2, ts;
+
+-- stop merges to demonstrate data before / after 
+-- a rolling up
+SYSTEM STOP TTL MERGES test_ttl_group_by_agg;
+SYSTEM STOP MERGES test_ttl_group_by_agg;
+
+INSERT INTO test_ttl_group_by_raw (key1, key2, ts)
+SELECT
+    1,
+    1,
+    toStartOfMinute(now() + number*60)
+FROM numbers(100);
+
+INSERT INTO test_ttl_group_by_raw (key1, key2, ts)
+SELECT
+    1,
+    1,
+    toStartOfMinute(now() + number*60)
+FROM numbers(100);
+
+INSERT INTO test_ttl_group_by_raw (key1, key2, ts)
+SELECT
+    1,
+    1,
+    toStartOfMinute(now() + number*60 - toIntervalDay(60))
+FROM numbers(100);
+
+INSERT INTO test_ttl_group_by_raw (key1, key2, ts)
+SELECT
+    1,
+    1,
+    toStartOfMinute(now() + number*60 - toIntervalDay(60))
+FROM numbers(100);
+
+SELECT
+    toYYYYMM(ts) AS m,
+    count(),
+    countMerge(counter)
+FROM test_ttl_group_by_agg
+GROUP BY m;
+
+┌──────m─┬─count()─┬─countMerge(counter)─┐
+│ 202307 │     200 │                 200 │
+│ 202309 │     200 │                 200 │
+└────────┴─────────┴─────────────────────┘
+
+SYSTEM START TTL MERGES test_ttl_group_by_agg;
+SYSTEM START MERGES test_ttl_group_by_agg;
+OPTIMIZE TABLE test_ttl_group_by_agg FINAL;
+
+SELECT
+    toYYYYMM(ts) AS m,
+    count(),
+    countMerge(counter)
+FROM test_ttl_group_by_agg
+GROUP BY m;
+
+┌──────m─┬─count()─┬─countMerge(counter)─┐
+│ 202307 │       1 │                 200 │
+│ 202309 │     100 │                 200 │
+└────────┴─────────┴─────────────────────┘
+```
 
 ### Multilevel TTL Group by
 
@@ -356,3 +457,5 @@ OPTIMIZE TABLE test_ttl_group_by FINAL;
 └────────┴─────────┴────────────┴────────────────┴────────────────┘
 
 ```
+
+Also see the [Altinity Knowledge Base pages on the MergeTree table engine family](../../../engines/mergetree-table-engine-family).

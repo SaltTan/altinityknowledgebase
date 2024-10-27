@@ -4,11 +4,14 @@ linkTitle: "Troubleshooting"
 description: >
     Troubleshooting
 ---
+
+Tips for ClickHouse® troubleshooting 
+
 ## Log of query execution
 
 Controlled by session level setting `send_logs_level`
 Possible values: `'trace', 'debug', 'information', 'warning', 'error', 'fatal', 'none'`
-Can be used with clickhouse-client in both interactive and non-interactive mode.
+Can be used with [clickhouse-client](https://docs.altinity.com/altinitycloud/altinity-cloud-connections/clickhouseclient/) in both interactive and non-interactive mode.
 
 ```bash
 $ clickhouse-client -mn --send_logs_level='trace' --query "SELECT sum(number) FROM numbers(1000)"
@@ -113,7 +116,7 @@ WITH
 SELECT
     concat('clickhouse-server@', version()) AS exporter,
     'https://www.speedscope.app/file-format-schema.json' AS `$schema`,
-    concat('Clickhouse query id: ', query) AS name,
+    concat('ClickHouse query id: ', query) AS name,
     CAST(samples, 'Array(Tuple(type String, name String, unit String, startValue UInt64, endValue UInt64, samples Array(Array(UInt32)), weights Array(UInt32)))') AS profiles,
     CAST(tuple(arrayMap(x -> (demangle(addressToSymbol(x)), addressToLine(x)), uniq_frames)), 'Tuple(frames Array(Tuple(name String, line String)))') AS shared
 FROM

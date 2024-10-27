@@ -4,26 +4,60 @@ linkTitle: "clickhouse-keeper"
 description: >
     clickhouse-keeper
 ---
-In 21.3 there is already an option to run own clickhouse zookeeper implementation. It's still experimental, and still need to be started additionally on few nodes (similar to 'normal' zookeeper) and speaks normal zookeeper protocol - needed to simplify A/B tests with real zookeeper.
 
-No docs, for now, only PR with code & tests. Of course, if you want to play with it - you can, and early feedback is very valuable. But be prepared for a lot of tiny issues here and there, so don't be disappointed if it will not satisfy your expectations for some reason. It's very-very fresh :slightly_smiling_face: It's ready for some trial runs, but not ready yet for production use cases.
+## clickhouse-keeper
+
+Since 2021 the development of built-in alternative for Zookeeper is happening, which goal is to address several design pitfalls, and get rid of extra dependency. 
+
+See slides:  https://presentations.clickhouse.com/meetup54/keeper.pdf and video  https://youtu.be/IfgtdU1Mrm0?t=2682
+
+## Current status (last updated: July 2023)
+
+Since version 23.3 we recommend using clickhouse-keeper for new installations. 
+
+Even better if you will use the latest version of clickhouse-keeper (currently it's 23.7), and it's not necessary to use the same version of clickhouse-keeper as ClickHouse® itself.
+
+For existing systems that currently use Apache Zookeeper, you can consider upgrading to clickhouse-keeper especially if you will upgrade clickhouse also.
+
+But please remember that on very loaded systems the change can give no performance benefits or can sometimes lead to a worse performance.
+
+The development pace of keeper code is [still high](https://github.com/ClickHouse/ClickHouse/pulls?q=is%3Apr+keeper)
+so every new version should bring improvements / cover the issues, and stability/maturity grows from version to version, so 
+if you want to play with clickhouse-keeper in some environment - please use the most recent ClickHouse releases! And of course: share your feedback :)
+
+# How does it work
+
+Official docs: https://clickhouse.com/docs/en/guides/sre/keeper/clickhouse-keeper/
+
+
+ClickHouse-keeper still need to be started additionally on few nodes (similar to 'normal' zookeeper) and speaks normal zookeeper protocol - needed to simplify A/B tests with real zookeeper.
 
 To test that you need to run 3 instances of clickhouse-server (which will mimic zookeeper) with an extra config like that:
 
-[https://github.com/ClickHouse/ClickHouse/blob/c8b1004ecb4bfc4aa581dbcbbbe3a4c72ce57123/tests/integration/test_keeper_multinode_simple/configs/enable_keeper1.xml](https://github.com/ClickHouse/ClickHouse/blob/c8b1004ecb4bfc4aa581dbcbbbe3a4c72ce57123/tests/integration/test_keeper_multinode_simple/configs/enable_keeper1.xml)
+[https://github.com/ClickHouse/ClickHouse/blob/master/tests/integration/test_keeper_multinode_simple/configs/enable_keeper1.xml](https://github.com/ClickHouse/ClickHouse/blob/master/tests/integration/test_keeper_multinode_simple/configs/enable_keeper1.xml)
 
-[https://github.com/ClickHouse/ClickHouse/blob/c8b1004ecb4bfc4aa581dbcbbbe3a4c72ce57123/tests/integration/test_keeper_snapshots/configs/enable_keeper.xml](https://github.com/ClickHouse/ClickHouse/blob/c8b1004ecb4bfc4aa581dbcbbbe3a4c72ce57123/tests/integration/test_keeper_snapshots/configs/enable_keeper.xml)
+[https://github.com/ClickHouse/ClickHouse/blob/master/tests/integration/test_keeper_snapshots/configs/enable_keeper.xml](https://github.com/ClickHouse/ClickHouse/blob/master/tests/integration/test_keeper_snapshots/configs/enable_keeper.xml)
 
 or event single instance with config like that: [https://github.com/ClickHouse/ClickHouse/blob/master/tests/config/config.d/keeper_port.xml](https://github.com/ClickHouse/ClickHouse/blob/master/tests/config/config.d/keeper_port.xml)
 [https://github.com/ClickHouse/ClickHouse/blob/master/tests/config/config.d/zookeeper.xml](https://github.com/ClickHouse/ClickHouse/blob/master/tests/config/config.d/zookeeper.xml)
 
-And point all the clickhouses (zookeeper config secton) to those nodes / ports.
+And point all the ClickHouses (zookeeper config section) to those nodes / ports.
 
-Latest testing version is recommended. We will be thankful for any feedback.
+Latest version is recommended (even testing / master builds). We will be thankful for any feedback.
 
-## Example of a simple cluster with 2 nodes of Clickhouse using built-in keeper
+## systemd service file
 
-For example you can start two Clikhouse nodes (hostname1, hostname2)
+See 
+https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-zookeeper/clickhouse-keeper-service/
+
+## init.d script
+
+See 
+https://kb.altinity.com/altinity-kb-setup-and-maintenance/altinity-kb-zookeeper/clickhouse-keeper-initd/
+
+## Example of a simple cluster with 2 nodes of ClickHouse using built-in keeper
+
+For example you can start two ClickHouse nodes (hostname1, hostname2)
 
 ### hostname1
 
@@ -170,7 +204,7 @@ $ cat /etc/clickhouse-server/config.d/clusters.xml
 Then create a table
 
 ```sql
-create table test on '{cluster}'   ( A Int64, S String)
+create table test on cluster '{cluster}'   ( A Int64, S String)
 Engine = ReplicatedMergeTree('/clickhouse/{cluster}/tables/{database}/{table}','{replica}')
 Order by A;
 

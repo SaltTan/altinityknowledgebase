@@ -6,7 +6,7 @@ description: >
 ---
 ### Q. What is SimpleAggregateFunction? Are there advantages to use it instead of  AggregateFunction in AggregatingMergeTree?
 
-SimpleAggregateFunction can be used for those aggregations when the function state is exactly the same as the resulting function value. Typical example is `max` function: it only requires storing the single value which is already maximum, and no extra steps needed to get the final value. In contrast `avg` need to store two numbers - sum & count, which should be divided to get the final value of aggregation (done by the `-Merge` step at the very end).
+The ClickHouse® SimpleAggregateFunction can be used for those aggregations when the function state is exactly the same as the resulting function value. Typical example is `max` function: it only requires storing the single value which is already maximum, and no extra steps needed to get the final value. In contrast `avg` need to store two numbers - sum & count, which should be divided to get the final value of aggregation (done by the `-Merge` step at the very end).
 
 <table>
   <thead>
@@ -47,7 +47,7 @@ SimpleAggregateFunction can be used for those aggregations when the function sta
     <tr>
       <td style="text-align:left">reading raw value per row</td>
       <td style="text-align:left">you can access it directly</td>
-      <td style="text-align:left">you need to use <code>finalizeAgggregation</code> function</td>
+      <td style="text-align:left">you need to use <code>finalizeAggregation</code> function</td>
     </tr>
     <tr>
       <td style="text-align:left">using aggregated value</td>
@@ -77,9 +77,11 @@ SimpleAggregateFunction can be used for those aggregations when the function sta
   </tbody>
 </table>
 
-See also
-[https://github.com/ClickHouse/ClickHouse/pull/4629](https://github.com/ClickHouse/ClickHouse/pull/4629)
-[https://github.com/ClickHouse/ClickHouse/issues/3852](https://github.com/ClickHouse/ClickHouse/issues/3852)
+See also:
+
+* [Altinity Knowledge Base article on AggregatingMergeTree](../../engines/mergetree-table-engine-family/aggregatingmergetree/)
+* [https://github.com/ClickHouse/ClickHouse/pull/4629](https://github.com/ClickHouse/ClickHouse/pull/4629)
+* [https://github.com/ClickHouse/ClickHouse/issues/3852](https://github.com/ClickHouse/ClickHouse/issues/3852)
 
 ### Q. How maxSimpleState combinator result differs from plain max?
 

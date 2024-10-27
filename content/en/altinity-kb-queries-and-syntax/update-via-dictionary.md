@@ -101,11 +101,11 @@ FROM test_update
 ```
 
 {{% alert title="Info" color="info" %}}
-In case of Replicated installation, Dictionary should be created on all nodes and source tables should have ReplicatedMergeTree engine and be replicated across all nodes.
+In case of Replicated installation, Dictionary should be created on all nodes and source tables should use the [ReplicatedMergeTree](../../altinity-kb-setup-and-maintenance/altinity-kb-converting-mergetree-to-replicated/) engine and be replicated across all nodes.
 {{% /alert %}}
 
 {{% alert title="Info" color="info" %}}
-[Starting](https://github.com/ClickHouse/ClickHouse/pull/10186) from 20.4, ClickHouse forbid by default any potential non-deterministic mutations.
+[Starting](https://github.com/ClickHouse/ClickHouse/pull/10186) from 20.4, ClickHouse® forbid by default any potential non-deterministic mutations.
 This behavior controlled by setting `allow_nondeterministic_mutations`. You can append it to query like this `ALTER TABLE xxx UPDATE ... WHERE ... SETTINGS allow_nondeterministic_mutations = 1;`
 For `ON CLUSTER` queries, you would need to put this setting in default profile and restart ClickHouse servers.
 {{% /alert %}}

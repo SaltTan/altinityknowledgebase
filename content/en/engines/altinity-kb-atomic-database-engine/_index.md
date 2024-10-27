@@ -3,8 +3,10 @@ title: "Atomic Database Engine"
 linkTitle: "Atomic Database Engine"
 description: >
     Atomic Database Engine
+aliases:
+  /engines/altinity-kb-atomic-database-engine/altinity-kb-implementation-details
 ---
-In version 20.5 ClickHouse first introduced database engine=Atomic.
+In version 20.5 ClickHouse® first introduced database engine=Atomic.
 
 Since version 20.10 it is a default database engine (before engine=Ordinary was used).
 
@@ -35,9 +37,9 @@ Also, you can decrease the delay used by Atomic for real table drop (it’s 8 mi
 
 ```bash
 cat /etc/clickhouse-server/config.d/database_atomic_delay_before_drop_table.xml
-<yandex>
+<clickhouse>
     <database_atomic_delay_before_drop_table_sec>1</database_atomic_delay_before_drop_table_sec>
-</yandex>
+</clickhouse>
 ```
 
 ### **Q. I cannot reuse zookeeper path after dropping the table.**
@@ -66,9 +68,9 @@ SHOW CREATE TABLE xxx; /* or SELECT create_table_query FROM system.tables WHERE 
 
 ### Q. Should I use Atomic or Ordinary for new setups?
 
-All things inside clickhouse itself should work smoothly with `Atomic`.
+All things inside ClickHouse itself should work smoothly with `Atomic`.
 
-But some external tools - backup tools, things involving other kinds of direct manipulations with clickhouse files & folders may have issues with `Atomic`.
+But some external tools - backup tools, things involving other kinds of direct manipulations with ClickHouse files & folders may have issues with `Atomic`.
 
 `Ordinary` layout on the filesystem is simpler. And the issues which address Atomic (lock-free renames, drops, atomic exchange of table) are not so critical in most cases.
 
@@ -88,7 +90,7 @@ But some external tools - backup tools, things involving other kinds of direct m
     </tr>
     <tr>
       <td style="text-align:left">external tool support
-        <br />(like clickhouse-backup)</td>
+        <br />(like <code>clickhouse-backup</code>)</td>
       <td style="text-align:left">good / mature</td>
       <td style="text-align:left">limited / beta</td>
     </tr>
@@ -160,13 +162,13 @@ description: >
     cat /etc/clickhouse-server/users.d/disable_atomic_database.xml
 ---
 <?xml version="1.0"?>
-<yandex>
+<clickhouse>
     <profiles>
         <default>
             <default_database_engine>Ordinary</default_database_engine>
         </default>
     </profiles>
-</yandex>
+</clickhouse>
 ```
 
 ## Other sources

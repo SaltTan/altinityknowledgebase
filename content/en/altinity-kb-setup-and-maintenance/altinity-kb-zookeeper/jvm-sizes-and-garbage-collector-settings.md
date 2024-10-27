@@ -36,15 +36,15 @@ Set the Java heap size smaller than available RAM size on the node. This is very
 
 1. `MaxGCPauseMillis=50` (by default 200) - the 'target' acceptable pause for garbage collection (milliseconds)
 
-1. `jute.maxbuffer` limits the maximum size of znode content. By default it's 1Mb. In some usecases (lot of partitions in table) ClickHouse may need to create bigger znodes.
+1. `jute.maxbuffer` limits the maximum size of znode content. By default it's 1Mb. In some usecases (lot of partitions in table) ClickHouse® may need to create bigger znodes.
 
 1. (optional) enable GC logs: `-Xloggc:/path_to/gc.log`
 
 
 
-## Zookeeper configurarion used by Yandex Metrika (from 2017)
+## Zookeeper configuration used by Yandex Metrika (from 2017)
 
-The configuration used by Yandex ( [https://clickhouse.tech/docs/en/operations/tips/\#zookeeper](https://clickhouse.tech/docs/en/operations/tips/#zookeeper) ) - they use older JVM version (with `UseParNewGC` garbage collector), and tune GC logs heavily:
+The configuration used by Yandex ( [https://clickhouse.com/docs/en/operations/tips#zookeeper](https://clickhouse.com/docs/en/operations/tips#zookeeper) ) - they use older JVM version (with `UseParNewGC` garbage collector), and tune GC logs heavily:
 
 ```bash
 JAVA_OPTS="-Xms{{ cluster.get('xms','128M') }} \
@@ -74,7 +74,6 @@ JAVA_OPTS="-Xms{{ cluster.get('xms','128M') }} \
 * [https://docs.oracle.com/cd/E40972_01/doc.70/e40973/cnf_jvmgc.htm\#autoId2](https://docs.oracle.com/cd/E40972_01/doc.70/e40973/cnf_jvmgc.htm#autoId2)
 * [https://docs.cloudera.com/runtime/7.2.7/kafka-performance-tuning/topics/kafka-tune-broker-tuning-jvm.html](https://docs.cloudera.com/runtime/7.2.7/kafka-performance-tuning/topics/kafka-tune-broker-tuning-jvm.html)
 * [https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/cm-tune-g1gc.html](https://docs.cloudera.com/documentation/enterprise/6/6.3/topics/cm-tune-g1gc.html)
-* [https://blog.sokolenko.me/2014/11/javavm-options-production.html](https://blog.sokolenko.me/2014/11/javavm-options-production.html)
 * [https://www.maknesium.de/21-most-important-java-8-vm-options-for-servers](https://www.maknesium.de/21-most-important-java-8-vm-options-for-servers)
 * [https://docs.oracle.com/javase/10/gctuning/introduction-garbage-collection-tuning.htm\#JSGCT-GUID-326EB4CF-8C8C-4267-8355-21AB04F0D304](https://docs.oracle.com/javase/10/gctuning/introduction-garbage-collection-tuning.htm#JSGCT-GUID-326EB4CF-8C8C-4267-8355-21AB04F0D304)
 * [https://github.com/chewiebug/GCViewer](https://github.com/chewiebug/GCViewer)

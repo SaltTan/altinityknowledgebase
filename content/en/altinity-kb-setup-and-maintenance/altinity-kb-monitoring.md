@@ -1,11 +1,11 @@
 ---
-title: "ClickHouse Monitoring"
-linkTitle: "ClickHouse Monitoring"
+title: "ClickHouse® Monitoring"
+linkTitle: "ClickHouse® Monitoring"
 description: >
-    ClickHouse Monitoring
+    ClickHouse® Monitoring
 ---
 
-## ClickHouse Monitoring
+## ClickHouse® Monitoring
 
 Monitoring helps to track potential issues in your cluster before they cause a critical error.
 
@@ -45,27 +45,32 @@ The following metrics should be collected / monitored
 * Enable [embedded exporter](https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings/#server_configuration_parameters-prometheus)
 * Grafana dashboards [https://grafana.com/grafana/dashboards/14192](https://grafana.com/grafana/dashboards/14192) or [https://grafana.com/grafana/dashboards/13500](https://grafana.com/grafana/dashboards/13500)
 
-### clickhouse-operator embedded exporter
+### Prometheus (embedded http handler with Altinity Kubernetes Operator for ClickHouse style metrics) + Grafana
 
-* exporter is included in clickhouse-operator, and enabled automatically
+* Enable [http handler](../monitoring-operator-exporter-compatibility/)
+* Useful, if you want to use the dashboard from the Altinity Kubernetes Operator for ClickHouse, but do not run ClickHouse in k8s.
+
+### Prometheus (embedded exporter in the Altinity Kubernetes Operator for ClickHouse) + Grafana
+
+* exporter is included in the Altinity Kubernetes Operator for ClickHouse, and enabled automatically
 * see instructions of [Prometheus](https://github.com/Altinity/clickhouse-operator/blob/eb3fc4e28514d0d6ea25a40698205b02949bcf9d/docs/prometheus_setup.md) and [Grafana](https://github.com/Altinity/clickhouse-operator/blob/eb3fc4e28514d0d6ea25a40698205b02949bcf9d/docs/grafana_setup.md) installation (if you don't have one)
 * Grafana dashboard [https://github.com/Altinity/clickhouse-operator/tree/master/grafana-dashboard](https://github.com/Altinity/clickhouse-operator/tree/master/grafana-dashboard)
 * Prometheus alerts [https://github.com/Altinity/clickhouse-operator/blob/master/deploy/prometheus/prometheus-alert-rules-clickhouse.yaml](https://github.com/Altinity/clickhouse-operator/blob/master/deploy/prometheus/prometheus-alert-rules-clickhouse.yaml)
 
-### Prometheus exporter (external) + Grafana
+### Prometheus (ClickHouse external exporter) + Grafana
 
 * [clickhouse-exporter](https://github.com/ClickHouse/clickhouse_exporter)
 * Dashboard: https://grafana.com/grafana/dashboards/882 
 
 (unmaintained)
 
-### Dashboards quering clickhouse directly via vertamedia / Altinity plugin
+### Dashboards querying ClickHouse directly via vertamedia / Altinity plugin
 
 * Overview: [https://grafana.com/grafana/dashboards/13606](https://grafana.com/grafana/dashboards/13606)
 * Queries dashboard (analyzing system.query_log) https://grafana.com/grafana/dashboards/2515
 
 
-## Dashboard quering clickhouse directly via Grafana plugin 
+## Dashboard querying ClickHouse directly via Grafana plugin 
 
 * https://grafana.com/blog/2022/05/05/introducing-the-official-clickhouse-plugin-for-grafana/
 
@@ -101,7 +106,7 @@ ClickHouse allow to access lot of internals using system tables. The main tables
 * system.asynchronous_metrics
 * system.events
 
-Minimum neccessary set of checks
+Minimum necessary set of checks
 
 <table>
   <tr>
@@ -332,11 +337,6 @@ See https://clickhouse.com/docs/en/operations/opentelemetry/
 
 * [https://tech.marksblogg.com/clickhouse-prometheus-grafana.html](https://tech.marksblogg.com/clickhouse-prometheus-grafana.html)
 * [Key Metrics for Monitoring ClickHouse](https://sematext.com/blog/clickhouse-monitoring-key-metrics/)
-* [ClickHouse Monitoring Key Metrics to Monitor](https://dzone.com/articles/clickhouse-monitoring-key-metrics-to-monitor-semat)
-* [ClickHouse Monitoring Tools: Five Tools to Consider](https://dzone.com/articles/clickhouse-monitoring-tools-five-tools-to-consider)
-* [Monitoring ClickHouse](https://docs.instana.io/ecosystem/clickhouse/)
 * [Monitor ClickHouse with Datadog](https://www.datadoghq.com/blog/monitor-clickhouse/)
 * [Unsorted notes on monitor and Alerts](https://docs.google.com/spreadsheets/d/1K92yZr5slVQEvDglfZ88k_7bfsAKqahY9RPp_2tSdVU/edit#gid=521173956)
 * https://intl.cloud.tencent.com/document/product/1026/36887
-* https://chowdera.com/2021/03/20210301161806704Y.html
-* https://chowdera.com/2021/03/20210301160252465m.html#

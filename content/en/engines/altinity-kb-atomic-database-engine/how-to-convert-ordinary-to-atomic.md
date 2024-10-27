@@ -3,51 +3,26 @@ title: "How to Convert Ordinary to Atomic"
 linkTitle: "How to Convert Ordinary to Atomic"
 weight: 100
 description: >-
-     Clickhouse Howto Convert Ordinary to Atomic
+     ClickHouse® How to Convert Ordinary to Atomic
 ---
 
-## Example How to Convert Ordinary to Atomic
+## New, official way
 
-```sql
-CREATE DATABASE db ENGINE=Ordinary;
-CREATE TABLE db.test(A Int64) ENGINE=MergeTree ORDER BY A;
-
-CREATE MATERIALIZED VIEW db.test_mv(A Int64) 
-ENGINE=MergeTree ORDER BY A AS SELECT * FROM db.test;
-
-INSERT INTO db.test SELECT * FROM numbers(1000);
-
-CREATE DATABASE db_temp ENGINE=Atomic;
-
-RENAME TABLE db.test TO db_temp.test;
-RENAME TABLE db.test_mv TO db_temp.test_mv;
-
-DROP DATABASE db;
-RENAME DATABASE db_temp TO db;
-
-USE db;
-SHOW TABLES;
-┌─name───────────────────────────────────────────┐
-│ .inner_id.37db402c-fc46-421d-b7db-402cfc46921d │
-│ test                                           │
-│ test_mv                                        │
-└────────────────────────────────────────────────┘
-
-INSERT INTO db.test SELECT * FROM numbers(1000);
-
-SELECT count() FROM test;
-┌─count()─┐
-│    2000 │
-└─────────┘
-
-SELECT count() FROM test_mv;
-┌─count()─┐
-│    2000 │
-└─────────┘
-
-SHOW CREATE DATABASE db;
-┌─statement─────────────────────────┐
-│ CREATE DATABASE db
-ENGINE = Atomic │
-└───────────────────────────────────┘
+* Implemented automatic conversion of database engine from `Ordinary` to `Atomic` (ClickHouse® Server 22.8+). Create empty `convert_ordinary_to_atomic` file in `flags` directory and all `Ordinary` databases will be converted automatically on next server start.
+* The conversion is not automatic between upgrades, you need to set the flag as explained below:
 ```
+Warnings:
+ * Server has databases (for example `test`) with Ordinary engine, which was deprecated. To convert this database to the new Atomic engine, create a flag /var/lib/clickhouse/flags/convert_ordinary_to_atomic and make sure that ClickHouse has write permission for it.
+Example: sudo touch '/var/lib/clickhouse/flags/convert_ordinary_to_atomic' && sudo chmod 666 '/var/lib/clickhouse/flags/convert_ordinary_to_atomic'
+```  
+* Resolves [#39546](https://github.com/ClickHouse/ClickHouse/issues/39546). [#39933](https://github.com/ClickHouse/ClickHouse/pull/39933) ([Alexander Tokmakov](https://github.com/tavplubix))
+
+* There can be some problems if the `default` database is Ordinary and fails for some reason. You can add:
+
+```
+<clickhouse>
+     <allow_reserved_database_name_tmp_convert>1</allow_reserved_database_name_tmp_convert>
+</clickhouse>
+```
+[More detailed info here](https://github.com/ClickHouse/ClickHouse/blob/f01a285f6091265cfae72bb7fbf3186269804891/src/Interpreters/loadMetadata.cpp#L150)
+

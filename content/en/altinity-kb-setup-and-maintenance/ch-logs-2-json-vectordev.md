@@ -1,12 +1,33 @@
 ---
-title: "Transformation Clickhouse logs to ndjson using Vector.dev"
-linkTitle: "Clickhouse logs and Vector.dev"
+title: "Transforming ClickHouse logs to ndjson using Vector.dev"
+linkTitle: "ClickHouse logs and Vector.dev"
 weight: 100
 description: >-
-     Transformation Clickhouse logs to ndjson using Vector.dev
+     Transforming ClickHouse logs to ndjson using Vector.dev
 ---
 
-## Transformation Clickhouse logs to ndjson using Vector.dev"
+### ClickHouse 22.8
+
+Starting from 22.8 version, ClickHouse support writing logs in JSON format:
+
+```
+<?xml version="1.0"?>
+<clickhouse>
+    <logger>
+        <!-- Structured log formatting:
+        You can specify log format(for now, JSON only). In that case, the console log will be printed
+        in specified format like JSON.
+        For example, as below:
+        {"date_time":"1650918987.180175","thread_name":"#1","thread_id":"254545","level":"Trace","query_id":"","logger_name":"BaseDaemon","message":"Received signal 2","source_file":"../base/daemon/BaseDaemon.cpp; virtual void SignalListener::run()","source_line":"192"}
+        To enable JSON logging support, just uncomment <formatting> tag below.
+        -->
+        <formatting>json</formatting>
+    </logger>
+</clickhouse>
+```
+
+
+## Transforming ClickHouse logs to ndjson using Vector.dev"
 
 ### Installation of vector.dev
 
@@ -72,7 +93,7 @@ tail /var/log/clickhouse-server-json/clickhouse-server.2022-04-21.ndjson
 
 ### sink logs into ClickHouse table
 
-Be carefull with logging ClickHouse messages into the same ClickHouse instance, it will cause endless recursive self-logging.
+Be careful with logging ClickHouse messages into the same ClickHouse instance, it will cause endless recursive self-logging.
 
 ```sql
 create table default.clickhouse_logs(

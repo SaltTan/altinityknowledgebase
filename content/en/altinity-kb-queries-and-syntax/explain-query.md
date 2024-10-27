@@ -10,10 +10,12 @@ description: >
 ```sql
 EXPLAIN AST
         SYNTAX
-        PLAN header = 0,
+        PLAN indexes = 0,
+             header = 0,
              description = 1,
              actions = 0,
              optimize = 1
+             json = 0
         PIPELINE header = 0,
                  graph = 0,
                  compact = 1
@@ -25,7 +27,9 @@ SELECT ...
 * `SYNTAX` - query text after AST-level optimizations
 * `PLAN` - query execution plan
 * `PIPELINE` - query execution pipeline
-* `ESTIMATE` - https://github.com/ClickHouse/ClickHouse/pull/26131 (since 21.9)
+* `ESTIMATE` - See [Estimates for select query](https://github.com/ClickHouse/ClickHouse/pull/26131), available since ClickHouse® 21.9
+* `indexes=1` supported starting from 21.6 (https://github.com/ClickHouse/ClickHouse/pull/22352 )
+* `json=1` supported starting from 21.6 (https://github.com/ClickHouse/ClickHouse/pull/23082)
 
 
 References

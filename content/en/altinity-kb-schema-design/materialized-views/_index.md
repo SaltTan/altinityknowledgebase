@@ -5,13 +5,13 @@ description: >
     MATERIALIZED VIEWS
 ---
 {{% alert title="Info" color="info" %}}
-MATERIALIZED VIEWs in ClickHouse behave like AFTER INSERT TRIGGER to the left-most table listed in its SELECT statement.
+MATERIALIZED VIEWs in ClickHouse® behave like AFTER INSERT TRIGGER to the left-most table listed in its SELECT statement.
 {{% /alert %}}
 
 
 # MATERIALIZED VIEWS
 
-* Clickhouse and the magic of materialized views. Basics explained with examples: [webinar recording](https://altinity.com/webinarspage/2019/6/26/clickhouse-and-the-magic-of-materialized-views)
+* ClickHouse and the magic of materialized views. Basics explained with examples: [webinar recording](https://altinity.com/webinarspage/2019/6/26/clickhouse-and-the-magic-of-materialized-views)
 * Everything you should know about materialized views. Very detailed information about internals: [video](https://youtu.be/ckChUkC3Pns?t=9353), [annotated presentation](https://den-crane.github.io/Everything_you_should_know_about_materialized_views_commented.pdf), [presentation](https://github.com/ClickHouse/clickhouse-presentations/blob/master/meetup47/materialized_views.pdf)
 
 ## Best practices
@@ -29,7 +29,7 @@ MATERIALIZED VIEWs in ClickHouse behave like AFTER INSERT TRIGGER to the left-mo
 
     That way it's bit simpler to do schema migrations or build more complicated pipelines when one table is filled by several MV.
 
-    With engine=Atomic it hard to map undelying table with the MV.
+    With engine=Atomic it hard to map underlying table with the MV.
 
 2. Avoid using POPULATE when creating MATERIALIZED VIEW on big tables.
 

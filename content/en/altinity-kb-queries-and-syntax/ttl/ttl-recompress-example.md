@@ -5,6 +5,7 @@ description: >
     TTL Recompress example
 ---
 
+*See also [the Altinity Knowledge Base article on testing different compression codecs](../../../altinity-kb-schema-design/codecs/altinity-kb-how-to-test-different-compression-codecs).*
 
 ## Example how to create a table and define recompression rules
 
@@ -23,7 +24,7 @@ TTL event_time + toIntervalMonth(1) RECOMPRESS CODEC(ZSTD(1)),
     event_time + toIntervalMonth(6) RECOMPRESS CODEC(ZSTD(6);
 ```
 
-Default comression is LZ4 [https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/\#server-settings-compression](https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-compression)
+Default compression is LZ4. See [the ClickHouse® documentation](https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings#server-settings-compression) for more information. 
 
 These TTL rules recompress data after 1 and 6 months.
 
@@ -49,4 +50,4 @@ ALTER TABLE hits
        event_time + toIntervalMonth(6) RECOMPRESS CODEC(ZSTD(6));
 ```
 
-All columns have implicite default compression from server config, except `event_time`, that's why need to change to compression to `Default` for this column otherwise it won't be recompressed.
+All columns have implicit default compression from server config, except `event_time`, that's why need to change to compression to `Default` for this column otherwise it won't be recompressed.
